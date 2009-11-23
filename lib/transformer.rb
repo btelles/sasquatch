@@ -13,23 +13,20 @@ module Transformer
 
      define_method("transform_#{input_format}") do |files_to_transform, output_folder, sub_folder_to_start_at, *options| 
 
+       messages = []
        files_to_transform.each do |file|
-         #begin
-           #debugger
-           if File.extname(file) == ".#{input_format}"
-             output_folder = output_folder + File.dirname(file).gsub(Regexp.escape(sub_folder_to_start_at), '') if sub_folder_to_start_at
-             output_folder.gsub!(/\/$/, '')
-             FileUtils.makedirs(output_folder) unless File.directory?(output_folder)
-             output_path = "#{output_folder}/#{File.basename(file, '.'+input_format)}.#{output_format}"
-             output = File.open(output_path, 'w')
-             output.write(yield(file, options))
-             output.close
-             puts "Regenerated #{file}"
-           end
-        # rescue Exception => e
-         #  puts "There was a problem generating the output file. Check that you have folder permissions"
-        # end
+         if File.extname(file) == ".#{input_format}"
+           output_folder = output_folder + File.dirname(file).gsub(Regexp.escape(sub_folder_to_start_at), '') if sub_folder_to_start_at
+           output_folder.gsub!(/\/$/, '')
+           FileUtils.makedirs(output_folder) unless File.directory?(output_folder)
+           output_path = "#{output_folder}/#{File.basename(file, '.'+input_format)}.#{output_format}"
+           output = File.open(output_path, 'w')
+           output.write(yield(file, options))
+           output.close
+           messages << "Regenerated #{file}"
+         end
        end
+       messages.join("\n")
      end
   end
 end

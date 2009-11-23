@@ -22,7 +22,7 @@ module Sasquatch
       end
       flow do
         para "HTML Output:", :margin_right => 12
-        @html_folder = edit_line('<haml_folder>/output', :margin_right => 10)
+        @html_folder = edit_line('', :margin_right => 10)
         button "Browse" do
           @html_folder.text= ask_open_folder
         end
@@ -36,31 +36,34 @@ module Sasquatch
       end
       flow do
         para "CSS Output:", :margin_right => 20
-        @css_folder = edit_line('<sass_folder>/stylesheets', :margin_right => 10)
+        @css_folder = edit_line('', :margin_right => 10)
         button("Browse", :align => 'right') do
           @css_folder.text= ask_open_folder
         end
       end
       flow do
-        @start_button = button "Start\nWatching", :align => 'center', :width => 150, :height => 100, :margin => [50, 10, 10, 10] do
+        @start_button = button "   Start\nWatching", :align => 'center', :width => 110, :height => 100, :margin => [10, 10, 10, 10] do
           start_watching
         end
-        @stop_button = button "Not Watching", :align => 'center', :width => 100, :height => 100, :margin => [0, 10, 10, 10] do
+        @stop_button = button "   Stop\nWatching", :align => 'center', :width => 100, :height => 100, :margin => [0, 10, 10, 10] do
           stop_watching
         end
+        para link('HAML Website', :click => 'http://haml-lang.com/'), :top => 150, :left => 210
+        para link('HAML Reference', :click => 'http://haml-lang.com/docs/yardoc/HAML_REFERENCE.md.html'), :top => 175, :left => 210
+        para link('Sasquatch site', :click => 'http://github.com/btelles/sasquatch'), :top => 200, :left => 210
       end
-
       para 'Status:', :points => 10, :weight => 'bold'
       @output = stack :height => 150, :scroll => true do
         background aliceblue
-        code 'Not handling'
+        para'Not Watching'
       end
     end
   end
   def retrieve_previous_settings
-    puts puts File.exist?(File.expand_path(File.dirname(__FILE__) + '/config.ini'))
-    settings_text =  IO.read(File.expand_path(File.dirname(__FILE__) + '/config.ini')) if File.exist('config.ini')
-    parsed_settings = YAML::Load(settings_text)
+    if File.exist?(File.dirname(__FILE__) + '/config.ini')
+      settings_text =  IO.read(File.expand_path(File.dirname(__FILE__) + '/config.ini'))
+      parsed_settings = YAML::load(settings_text)
+    end
     @haml_folder.text = parsed_settings[:haml_folder]
     @html_folder.text = parsed_settings[:html_folder]
     @sass_folder.text = parsed_settings[:sass_folder]
@@ -68,30 +71,31 @@ module Sasquatch
   end
   def save_settings
     File.open(File.expand_path(File.dirname(__FILE__) + '/config.ini'), 'w') do |f| 
-      f.write YAML::dump({:haml_folder => @haml_folder, 
-        :html_folder => @html_folder,
-        :sass_folder => @sass_folder,
-        :css_folder  => @css_folder})
+      f.write YAML::dump({:haml_folder => @haml_folder.text, 
+        :html_folder => @html_folder.text,
+        :sass_folder => @sass_folder.text,
+        :css_folder  => @css_folder.text})
     end
   end
 
   def start_watching
-    @start_button.state = 'disabled'
-    @stop_button.state = 'enabled'
+    @start_button.hide
+    @stop_button.show
+    @output.append {para "Started Watching..."}
     @thread = Thread.new do 
       @watcher = Watcher.new(@haml_folder.text, @sass_folder.text, @html_folder.text, @css_folder.text)
       @watcher.start do |output|
-        #@output.append {code output}
+        @output.append {para output}
       end
     end
-    #@thread.join
-    #save_settings
+    save_settings
   end
 
   def stop_watching
-    @start_button.state = 'enabled'
-    @stop_button.state = 'disabled'
+    @start_button.show
+    @stop_button.hide
     @thread.kill! if @thread
+    @output.append {para "Stopped Watching."}
   end
 end
 
