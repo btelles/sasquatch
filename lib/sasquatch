@@ -4,6 +4,6 @@ Dir.chdir(File.expand_path(File.dirname(__FILE__) + '/../lib'))
 require 'sasquatch'
 Shoes.app :width => 450, :title => 'Sasquatch' do
   extend Sasquatch
-
   draw_main_window
+  retrieve_previous_settings
 end

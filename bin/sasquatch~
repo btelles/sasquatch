@@ -1,5 +1,17 @@
 Dir.chdir(File.expand_path(File.dirname(__FILE__) + '/../lib'))
 
+Shoes.setup do
+  gem 'hpricot'
+  gem 'haml'
+end
+
+require 'ftools'
+require 'hpricot'
+
+require 'haml'
+require 'haml/engine'
+require 'sass'
+require 'sass/engine'
 
 require 'sasquatch'
 Shoes.app :width => 450, :title => 'Sasquatch' do
