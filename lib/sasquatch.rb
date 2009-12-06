@@ -1,13 +1,6 @@
-require 'rubygems'
-require 'ftools'
-require 'haml'
-require 'yaml'
-require 'haml/engine'
-require 'sass'
-require 'sass/engine'
-require 'hpricot'
-require 'watcher'
-require 'pty'
+
+
+
 
 module Sasquatch
   def draw_main_window
@@ -82,6 +75,7 @@ module Sasquatch
     @start_button.hide
     @stop_button.show
     @output.append {para "Started Watching..."}
+	@output.append {para "#{@haml_folder.text} exists? #{File.directory?(@haml_folder.text) ? 'yes':  'no'}" }
     @thread = Thread.new do 
       @watcher = Watcher.new(@haml_folder.text, @sass_folder.text, @html_folder.text, @css_folder.text)
       @watcher.start do |output|
@@ -100,3 +94,8 @@ module Sasquatch
 end
 
 
+Shoes.app :width => 450, :title => 'Sasquatch' do
+  extend Sasquatch
+  draw_main_window
+  retrieve_previous_settings
+end

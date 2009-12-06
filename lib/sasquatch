@@ -1,9 +1,23 @@
 Dir.chdir(File.expand_path(File.dirname(__FILE__) + '/../lib'))
 
+Shoes.setup do
+  #gem 'ftools'
+  gem 'haml'  
+end
+require 'rubygems'
+require 'ftools'
+require 'haml'
+require 'yaml'
+require 'haml/engine'
+require 'sass'
+require 'sass/engine'
+require 'hpricot'
+require 'watcher'
+
 
 require 'sasquatch'
-Shoes.app :width => 450, :title => 'Sasquatch' do
-  extend Sasquatch
-  draw_main_window
-  retrieve_previous_settings
-end
+#Shoes.app :width => 450, :title => 'Sasquatch' do
+#  extend Sasquatch
+#  draw_main_window
+#  retrieve_previous_settings
+#end
